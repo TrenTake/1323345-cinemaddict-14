@@ -1,7 +1,7 @@
 # Проект «Киноман»
 
 * Студент: [Stephanie Bobyr](https://up.htmlacademy.ru/ecmascript/14/user/1323345).
-* Наставник: [Roman Lauryniuk🐾🐈🐾](https://htmlacademy.ru/profile/id1666565).
+* Наставник: [Roman Lauryniuk🐾🐈](https://htmlacademy.ru/profile/id1666565).
 
 ---
 
