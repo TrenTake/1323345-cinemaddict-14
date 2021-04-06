@@ -1,43 +1,62 @@
-import {createProfileTemplate} from './view/profile';
-import {createMainNavigationTemplate} from './view/navigation';
-import {createSortTemplate} from './view/sort';
-import {createFilmDetailsTemplate} from './view/details';
-import {createShowMoreButtonTemplate} from './view/show-button';
-import {createFilmCardTemplate} from './view/card';
-import {createFilmContainerTemplate} from './view/container';
-import {createStatisticsTemplate} from './view/statistics';
+import {Profile} from './view/profile';
+import {Navigation} from './view/navigation';
+import {Sort} from './view/sort';
+import {ShowMoreButton} from './view/show-button';
+import {FilmCardTemplate} from './view/card';
+import {Container} from './view/container';
+import {Statistics} from './view/statistics';
+import {generateFilmCards, getRandomMovie} from './mock/movie-card';
+import {Utils} from './utils';
 
 const CARDS_COUNT = 5;
 const EXTRA_CARDS_COUNT = 2;
+const FILMS_COUNT = 20;
 
-
+const films = generateFilmCards(FILMS_COUNT);
 const render = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
+  container.insertAdjacentElement(place, template);
 };
 
-const headerElement = document.body.querySelector(`.header`);
-render(headerElement, createProfileTemplate(), `beforeend`);
-const mainElement = document.body.querySelector(`.main`);
-render(mainElement, createMainNavigationTemplate(), `beforeend`);
-render(mainElement, createSortTemplate(), `beforeend`);
-render(mainElement, createFilmContainerTemplate(), `beforeend`);
-const filmsExtraListElements = document.body.querySelectorAll(`.films-list--extra`);
+const headerElement = document.querySelector(`.header`);
+render(headerElement, Utils.createElement(new Profile()), `beforeend`);
+const mainElement = document.querySelector(`.main`);
+render(mainElement, Utils.createElement(new Navigation()), `beforeend`);
+render(mainElement, Utils.createElement(new Sort()), `beforeend`);
+render(mainElement, Utils.createElement(new Container()), `beforeend`);
+const filmsExtraListElements = document.querySelectorAll(`.films-list--extra`);
 
-const filmContainerElement = document.body.querySelector(`.films-list`);
-const cardWrapperElement = document.querySelector(`.films-list .films-list__container`);
+const filmContainerElement = document.querySelector(`.films-list`);
+const cardWrapperElement = filmContainerElement.querySelector(`.films-list__container`);
 for (let i = 1; i <= CARDS_COUNT; i++) {
-  render(cardWrapperElement, createFilmCardTemplate(), `beforeend`);
+  render(cardWrapperElement, Utils.createElement(new FilmCardTemplate(getRandomMovie(films))), `beforeend`);
 }
 
+const topRatedContainerElement = filmsExtraListElements[0].querySelector(`.films-list__container`);
 for (let i = 1; i <= EXTRA_CARDS_COUNT; i++) {
-  render(filmsExtraListElements[0].querySelector(`.films-list__container`), createFilmCardTemplate(), `beforeend`);
+  render(topRatedContainerElement, Utils.createElement(new FilmCardTemplate(getRandomMovie(films))), `beforeend`);
 }
 
+const mostCommentedContrainerElement = filmsExtraListElements[1].querySelector(`.films-list__container`);
 for (let i = 1; i <= EXTRA_CARDS_COUNT; i++) {
-  render(filmsExtraListElements[1].querySelector(`.films-list__container`), createFilmCardTemplate(), `beforeend`);
+  render(mostCommentedContrainerElement, Utils.createElement(new FilmCardTemplate(getRandomMovie(films))), `beforeend`);
 }
 
-render(filmContainerElement, createShowMoreButtonTemplate(), `beforeend`);
-const filmStatisticsElement = document.body.querySelector(`.footer__statistics`);
-render(filmStatisticsElement, createStatisticsTemplate(), `beforeend`);
-// render(document.body, createFilmDetailsTemplate(), `beforeend`);
+render(filmContainerElement, Utils.createElement(new ShowMoreButton()), `beforeend`);
+const filmStatisticsElement = document.querySelector(`.footer__statistics`);
+render(filmStatisticsElement, Utils.createElement(new Statistics()), `beforeend`);
+
+const showMoreButton = document.querySelector(`.films-list__show-more`);
+let showingCards = CARDS_COUNT;
+// films.slice(0, showingCards)
+//   .forEach((movie) => render(cardWrapperElement, Utils.createElement(new FilmCardTemplate(movie)), `beforeend`));
+
+showMoreButton.addEventListener(`click`, () => {
+  const existingCards = showingCards;
+  showingCards = showingCards + CARDS_COUNT;
+  films.slice(existingCards, showingCards)
+    .forEach((movie) => render(cardWrapperElement, Utils.createElement(new FilmCardTemplate(movie)), `beforeend`));
+
+  if (showingCards >= films.length) {
+    showMoreButton.remove();
+  }
+});
